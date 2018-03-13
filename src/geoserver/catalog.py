@@ -1057,3 +1057,24 @@ class Catalog(object):
             self._cache.pop("%s/workspaces.xml" % self.service_url, None)
         else:
             raise FailedRequestError("no workspace named '%s'" % name)
+
+    # set workspace settings
+    # TODO : support contacts and address
+    def set_workspace_settings(self, workspace,proxy_base_url, verbose, verbose_exceptions, local_workspace_includes_prefix,charset, num_decimals):
+        xml = ('''<settings>
+                <charset>{charset}</charset>
+                <numDecimals>{num_decimals}</numDecimals>
+                <proxyBaseUrl>{proxy_base_url}</proxyBaseUrl>
+                <verbose>{verbose}</verbose>
+                <verboseExceptions>{verbose_exceptions}</verboseExceptions>
+                <localWorkspaceIncludesPrefix>{local_workspace_includes_prefix}</localWorkspaceIncludesPrefix>
+                </settings>''').format(charset=charset, num_decimals=num_decimals, proxy_base_url=proxy_base_url,
+                                       verbose=str(verbose).lower() ,
+                                       verbose_exceptions=str(verbose_exceptions).lower(),
+                                       local_workspace_includes_prefix=str(local_workspace_includes_prefix).lower() )
+        headers = {"Content-Type": "application/xml"}
+        workspace_url = self.service_url + "/workspaces/" + workspace.name + "/settings"
+
+        headers, response = self.http.request(workspace_url, "POST", xml, headers)
+        assert 200 <= headers.status < 300, "Tried to create workspace settings but got " + str(headers.status) + ": " + response
+        # TODO: return workspace settings.
