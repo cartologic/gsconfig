@@ -1078,3 +1078,4 @@ class Catalog(object):
         headers, response = self.http.request(workspace_url, "POST", xml, headers)
         assert 200 <= headers.status < 300, "Tried to create workspace settings but got " + str(headers.status) + ": " + response
         # TODO: return workspace settings.
+        return True
